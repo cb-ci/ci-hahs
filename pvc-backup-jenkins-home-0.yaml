@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backup-jenkins-home-${DOMAIN}-0
+  namespace: cloudbees-core
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: gp2
+  volumeMode: Filesystem
+  volumeName: backup-jenkins-home-$DOMAIN-0

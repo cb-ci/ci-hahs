@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: allocate-backup-jenkins-home-${DOMAIN}-0
+spec:
+  template:
+    spec:
+      volumes:
+      - name: volume
+        persistentVolumeClaim:
+          claimName: backup-jenkins-home-${DOMAIN}-0
+      containers:
+      - name: busybox
+        image: busybox
+        command: ["true"]
+        volumeMounts:
+          - mountPath: /var/volume
+            name: volume
+        resources:
+          limits:
+            cpu: "1"
+            memory: 3072M
+          requests:
+            cpu: "1"
+            memory: 3072M
+      restartPolicy: Never
+  backoffLimit: 4
