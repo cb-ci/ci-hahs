@@ -8,7 +8,7 @@ spec:
   awsElasticBlockStore:
     fsType: ext4
     #This would be the EBS volume ID , volume gets restored from EBS Snappshot
-    volumeID: vol-0ab05ae9bbba198bb
+    volumeID: $VOLUMEID
   capacity:
     storage: 50Gi
   nodeAffinity:

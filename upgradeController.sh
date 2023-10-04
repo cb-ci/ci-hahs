@@ -4,6 +4,10 @@ set -euo pipefail
 
 #The source Controller name
 export DOMAIN=test-ebs
+export GENDIR=generated
+
+mkdir -p $GENDIR
+rm -Rf $GENDIR/*
 
 continueOrExit (){
 echo "Press 'y' to continue or 'n' to exit."
@@ -24,51 +28,63 @@ echo "Press 'y' to continue or 'n' to exit."
   esac
 }
 
-#kubectl get pv $(kubectl get "pvc/jenkins-home-${DOMAIN}-0" -o go-template={{.spec.volumeName}}) -o yaml > pv-backup-jenkins-home-${DOMAIN}-0.yaml
-#envsubst < pv-backup-jenkins-home-0.yaml  |kubectl apply -f -
-#continueOrExit
-#kubectl get "pvc/jenkins-home-${DOMAIN}-0" -o yaml > pvc-backup-jenkins-home-${DOMAIN}-0.yaml
-#envsubst < pvc-backup-jenkins-home-0.yaml  |kubectl apply -f -
-#continueOrExit
-#envsubst < allocate-backup-jenkins-home-0.yaml |kubectl apply -f -
-#continueOrExit
-#kubectl wait --for=condition=complete job/allocate-backup-jenkins-home-${DOMAIN}-0
-#continueOrExit
-#kubectl delete job/allocate-backup-jenkins-home-${DOMAIN}-0
-#continueOrExit
-
-mkdir -p generated
-
-#Backup existing Controller resources
-kubectl get statefulset  -l tenant=$DOMAIN -o yaml > generated/$DOMAIN-statefulset-source.yaml
-kubectl get service      -l tenant=$DOMAIN -o yaml > generated/$DOMAIN-service-source.yaml
-kubectl get ing          -l tenant=$DOMAIN -o yaml > generated/$DOMAIN-ing-source.yaml
-kubectl get pvc          -l tenant=$DOMAIN -o yaml > generated/$DOMAIN-pvc-source.yaml
-kubectl get pv $(kubectl get "pvc/jenkins-home-${DOMAIN}-0" -o go-template={{.spec.volumeName}}) -o yaml   > generated/$DOMAIN-pv-source.yaml
-
-
-#In case of EBS we need to scale down the Controller because of Multi-attach ReadWriteOnce is not supported
-kubectl scale statefulsets/$DOMAIN --replicas=0
+echo "Create EBS snapshot and volume for $DOMAIN"
+./scripts/createEBSSnapshotAndVolume.sh $DOMAIN
 continueOrExit
 
+echo "Backup existing Controller resources"
+kubectl get statefulset  -l tenant=$DOMAIN -o yaml > $GENDIR/$DOMAIN-statefulset-source.yaml
+kubectl get service      -l tenant=$DOMAIN -o yaml > $GENDIR/$DOMAIN-service-source.yaml
+kubectl get ing          -l tenant=$DOMAIN -o yaml > $GENDIR/$DOMAIN-ing-source.yaml
+kubectl get pvc          -l tenant=$DOMAIN -o yaml > $GENDIR/$DOMAIN-pvc-source.yaml
+kubectl get pv $(kubectl get "pvc/jenkins-home-${DOMAIN}-0" -o go-template={{.spec.volumeName}}) -o yaml   > $GENDIR/$DOMAIN-pv-source.yaml
+continueOrExit
+
+export VOLUMEID=$(cat $GENDIR/ebs-snapshot_volume.json |jq -r  '.VolumeId')
+echo "Create a new PV from the EBS snapshot volume with volume_id $VOLUMEID "
+envsubst < yaml/pv-backup-jenkins-home-0.yaml  |kubectl apply -f -
+continueOrExit
+
+echo "Create a PVC wich clains the backup PV"
+#kubectl get "pvc/jenkins-home-${DOMAIN}-0" -o yaml > yaml/pvc-backup-jenkins-home-${DOMAIN}-0.yaml
+envsubst < yaml/pvc-backup-jenkins-home-0.yaml  |kubectl apply -f -
+continueOrExit
+
+#Alocate a backup job that uses the backup PVC (the wolume made from EBS snapshot))
+envsubst < yaml/allocate-backup-jenkins-home-0.yaml |kubectl apply -f -
+continueOrExit
+kubectl wait --for=condition=complete job/allocate-backup-jenkins-home-${DOMAIN}-0
+continueOrExit
+kubectl delete job/allocate-backup-jenkins-home-${DOMAIN}-0
+continueOrExit
+
+
+
+
+
 #Create new volume with ReadWriteMany RWX
-envsubst < pvc-rwx-jenkins-home-0.yaml |kubectl apply -f -
+envsubst < yaml/pvc-rwx-jenkins-home-0.yaml |kubectl apply -f -
 continueOrExit
 
 #Test if we can claim the RWX volume
-envsubst < allocate-rwx-jenkins-home-0.yaml |kubectl apply -f -
+envsubst < yaml/allocate-rwx-jenkins-home-0.yaml |kubectl apply -f -
 continueOrExit
 kubectl wait --for=condition=complete job/allocate-rwx-jenkins-home-${DOMAIN}-0
 continueOrExit
 kubectl delete job/allocate-rwx-jenkins-home-${DOMAIN}-0
 
 #Sync JENKINS_HOME data to the new RWX volume
-./pvc-sync.sh jenkins-home-${DOMAIN}-0 pvc-rwx-jenkins-home-${DOMAIN}-0
+#./pvc-sync.sh jenkins-home-${DOMAIN}-0 pvc-rwx-jenkins-home-${DOMAIN}-0
+./scripts/pvc-sync.sh backup-jenkins-home-${DOMAIN}-0 pvc-rwx-jenkins-home-${DOMAIN}-0
 kubectl wait --for=condition=complete --timeout=900m job/migration
 kubectl delete job migration
 continueOrExit
+
+#In case of EBS we need to scale down the Controller because of Multi-attach ReadWriteOnce is not supported
+kubectl scale statefulsets/$DOMAIN --replicas=0
+continueOrExit
 #Replace the claimref and pv with the new volume (EFS/RWX)
-./rename_pvc.sh pvc-rwx-jenkins-home-${DOMAIN}-0 jenkins-home-${DOMAIN}-0
+./scripts/rename_pvc.sh pvc-rwx-jenkins-home-${DOMAIN}-0 jenkins-home-${DOMAIN}-0
 
 #Next: delete the Controller in CJOC and recreate it with the same name- Ensure efs-sc is applied in provisioning  config
 # Then enable HA
