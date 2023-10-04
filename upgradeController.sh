@@ -77,7 +77,7 @@ echo "sync JENKINS_HOME data from backup-jenkins-home-${DOMAIN}-0 to the new RWX
 ./scripts/pvc-sync.sh backup-jenkins-home-${DOMAIN}-0 pvc-rwx-jenkins-home-${DOMAIN}-0
 continueOrExit
 
-#In case of EBS we need to scale down the Controller now
+#In case of EBS snapshot PV we need to scale down the Controller now
 kubectl scale statefulsets/$DOMAIN --replicas=0
 continueOrExit
 
