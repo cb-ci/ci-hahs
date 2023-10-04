@@ -43,8 +43,9 @@ mkdir -p generated
 kubectl get statefulset  -l tenant=$DOMAIN -o yaml > generated/$DOMAIN-statefulset-source.yaml
 kubectl get service      -l tenant=$DOMAIN -o yaml > generated/$DOMAIN-service-source.yaml
 kubectl get ing          -l tenant=$DOMAIN -o yaml > generated/$DOMAIN-ing-source.yaml
-kubectl get pv           -l tenant=$DOMAIN -o yaml > generated/$DOMAIN-pv-source.yaml
 kubectl get pvc          -l tenant=$DOMAIN -o yaml > generated/$DOMAIN-pvc-source.yaml
+kubectl get pv $(kubectl get "pvc/jenkins-home-${DOMAIN}-0" -o go-template={{.spec.volumeName}}) -o yaml   > generated/$DOMAIN-pv-source.yaml
+
 
 #In case of EBS we need to scale down the Controller because of Multi-attach ReadWriteOnce is not supported
 kubectl scale statefulsets/$DOMAIN --replicas=0
