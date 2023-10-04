@@ -84,8 +84,8 @@ continueOrExit
 #Replace the claimref and pv with the new volume (EFS/RWX)
 ./scripts/rename_pvc.sh pvc-rwx-jenkins-home-${DOMAIN}-0 jenkins-home-${DOMAIN}-0
 
-#Next: delete the Controller in CJOC and recreate it with the same name- Ensure efs-sc is applied in provisioning  config
-cd ./scripts/createController/
-./createManagedController.sh ${DOMAIN} efs-sc
-# Then enable HA
+echo "Next: delete the Controller in CJOC and recreate it with the same name- Ensure efs-sc is applied in provisioning  config"
+echo "for example you can use CasC: see  ./scripts/createController/"
+echo "Example:  ./scripts/createController/ && ./createManagedController.sh ${DOMAIN} efs-sc"
+echo "Then enable HA on the controller"
 
