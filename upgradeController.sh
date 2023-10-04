@@ -85,7 +85,7 @@ continueOrExit
 ./scripts/rename_pvc.sh pvc-rwx-jenkins-home-${DOMAIN}-0 jenkins-home-${DOMAIN}-0
 
 echo "Next: delete the Controller in CJOC and recreate it with the same name- Ensure efs-sc is applied in provisioning  config"
-echo "for example you can use CasC: see  ./scripts/createController/"
-echo "Example:  ./scripts/createController/ && ./createManagedController.sh ${DOMAIN} efs-sc"
+echo "for example you can use CasC: see  ./scripts/createController/createManagedController.sh"
+echo "Example:  cd scripts/createController/ && ./createManagedController.sh ${DOMAIN} efs-sc"
 echo "Then enable HA on the controller"
 
