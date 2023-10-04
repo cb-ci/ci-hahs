@@ -3,7 +3,7 @@
 set -euo pipefail
 
 #The source Controller name
-export DOMAIN=test-ebs
+export DOMAIN=controller-ebs
 export GENDIR=generated
 
 mkdir -p $GENDIR
