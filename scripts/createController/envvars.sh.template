@@ -1,0 +1,9 @@
+#! /bin/bash
+export BASE_URL="https://<BASE_URL>"
+export CJOC_URL=${BASE_URL}"/cjoc"
+#export CONTROLLER_IMAGE_VERSION="2.414.2.2"
+export CONTROLLER_IMAGE_VERSION="2.414.2.2"
+export BUNDLE_NAME="null"
+export TOKEN="USER:TOKEN"
+export CREATE_MM_TEMPLATE_YAML=create_mm.yaml
+export CREATE_MM_FOLDER_TEMPLATE_YAML=create-folder.yaml
