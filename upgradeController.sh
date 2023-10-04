@@ -3,7 +3,7 @@
 set -euo pipefail
 
 #The source Controller name
-export DOMAIN=test-ebs
+export DOMAIN=test-ebs1
 export GENDIR=generated
 
 mkdir -p $GENDIR
@@ -58,10 +58,6 @@ continueOrExit
 kubectl delete job/allocate-backup-jenkins-home-${DOMAIN}-0
 continueOrExit
 
-
-
-
-
 #Create new volume with ReadWriteMany RWX
 envsubst < yaml/pvc-rwx-jenkins-home-0.yaml |kubectl apply -f -
 continueOrExit
@@ -73,19 +69,23 @@ kubectl wait --for=condition=complete job/allocate-rwx-jenkins-home-${DOMAIN}-0
 continueOrExit
 kubectl delete job/allocate-rwx-jenkins-home-${DOMAIN}-0
 
-#Sync JENKINS_HOME data to the new RWX volume
+#The following two lines would sync directly from the existing jenkins-home-${DOMAIN}-0. If so a scale down is required before
+#kubectl scale statefulsets/$DOMAIN --replicas=0
 #./pvc-sync.sh jenkins-home-${DOMAIN}-0 pvc-rwx-jenkins-home-${DOMAIN}-0
+
+echo "sync JENKINS_HOME data from backup-jenkins-home-${DOMAIN}-0 to the new RWX volume pvc-rwx-jenkins-home-${DOMAIN}-0"
 ./scripts/pvc-sync.sh backup-jenkins-home-${DOMAIN}-0 pvc-rwx-jenkins-home-${DOMAIN}-0
-kubectl wait --for=condition=complete --timeout=900m job/migration
-kubectl delete job migration
 continueOrExit
 
-#In case of EBS we need to scale down the Controller because of Multi-attach ReadWriteOnce is not supported
+#In case of EBS we need to scale down the Controller now
 kubectl scale statefulsets/$DOMAIN --replicas=0
 continueOrExit
+
 #Replace the claimref and pv with the new volume (EFS/RWX)
 ./scripts/rename_pvc.sh pvc-rwx-jenkins-home-${DOMAIN}-0 jenkins-home-${DOMAIN}-0
 
 #Next: delete the Controller in CJOC and recreate it with the same name- Ensure efs-sc is applied in provisioning  config
+cd ./scripts/createController/
+./createManagedController.sh ${DOMAIN} efs-sc
 # Then enable HA
 

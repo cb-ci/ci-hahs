@@ -24,7 +24,7 @@ if [ "$source_pvc" == "$dest_pvc" ]; then
   exit 1
 fi
 
-echo "1. Migration step"
+echo "create job that sync all JENKINS_HOME data from $source_pvc to $dest_pvc"
 kubectl apply -f - <<JOB
 apiVersion: batch/v1
 kind: Job
@@ -67,4 +67,6 @@ JOB
 echo "Waiting for migration to complete"
 echo "You can inspect progress using kubectl logs -f job/migration"
 echo "== Data from $source_pvc has been copied over to $dest_pvc"
+kubectl wait --for=condition=complete --timeout=900m job/migration
+kubectl delete job migration
 

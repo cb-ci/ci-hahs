@@ -9,6 +9,8 @@ fi
 source_pvc=$1
 dest_pvc=$2
 
+mkdir -p generated/patch
+
 if ! kubectl get "pvc/$source_pvc" -o name > /dev/null 2>&1; then
   echo "PVC $source_pvc does not exist."
   exit 1
@@ -19,7 +21,7 @@ if kubectl get "pvc/$dest_pvc" -o name > /dev/null 2>&1; then
   read -p "Are you sure? " -n 1 -r
   # Delete PVC-1, keep PV as backup
   pv1_name=$(kubectl get "pvc/${dest_pvc}" -o go-template={{.spec.volumeName}})
-  echo "$pv1_name" > old_pv
+  echo "$pv1_name" > generated/old_pv
   echo "== ${dest_pvc} points to pv/${pv1_name}"
   kubectl patch pv ${pv1_name} -p '{"spec": {"persistentVolumeReclaimPolicy": "Retain"}}'
   echo "Deleting ${dest_pvc}, we keep PV ${pv1_name} around"
@@ -27,19 +29,19 @@ if kubectl get "pvc/$dest_pvc" -o name > /dev/null 2>&1; then
   #kubectl patch pv ${pv1_name} -p '{"spec":{"claimRef": null}}'
 fi
 
-mkdir -p generated
+
 # Rename pvc-2 to pvc-1
 # Change PV RetainPolicy to "Retain"
 
 pv_name=$(kubectl get "pvc/${source_pvc}" -o go-template={{.spec.volumeName}})
 echo "== ${source_pvc} points to pv/${pv_name}"
-kubectl get "pvc/${source_pvc}" -o yaml > generated/source_pvc.yaml
+kubectl get "pvc/${source_pvc}" -o yaml > generated/patch/source_pvc.yaml
 kubectl patch pv ${pv_name} -p '{"spec": {"persistentVolumeReclaimPolicy": "Retain"}}'
 kubectl delete "pvc/${source_pvc}"
 kubectl patch pv ${pv_name} -p '{"spec":{"claimRef": null}}'
 
 # We ideally want to retain any user annotation
-cat <<EOF >generated/patch.yaml
+cat <<EOF >generated/patch/patch.yaml
 - op: replace
   path: /metadata/name
   value: ${dest_pvc}
@@ -60,7 +62,7 @@ cat <<EOF >generated/patch.yaml
   path: /status
 EOF
 
-cat <<EOF >generated/kustomization.yaml
+cat <<EOF >generated/patch/kustomization.yaml
 patches:
  - target:
       version: v1
@@ -71,9 +73,7 @@ resources:
 - source_pvc.yaml
 EOF
 
-trap "rm -rf generated" EXIT
-
-kubectl apply -k generated/
+kubectl apply -k generated/patch
 pv_name=$(kubectl get pvc/${dest_pvc} -o go-template={{.spec.volumeName}})
 echo "== ${dest_pvc} points to pv/${pv_name}"
 echo "== Resetting ${pv_name} retain policy to Delete"
