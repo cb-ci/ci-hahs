@@ -45,7 +45,7 @@ echo "Create a new PV from the EBS snapshot volume with volume_id $VOLUMEID "
 envsubst < yaml/pv-backup-jenkins-home-0.yaml  |kubectl apply -f -
 continueOrExit
 
-echo "Create a PVC wich clains the backup PV"
+echo "Create a PVC that clains the backup PV"
 #kubectl get "pvc/jenkins-home-${DOMAIN}-0" -o yaml > yaml/pvc-backup-jenkins-home-${DOMAIN}-0.yaml
 envsubst < yaml/pvc-backup-jenkins-home-0.yaml  |kubectl apply -f -
 continueOrExit
