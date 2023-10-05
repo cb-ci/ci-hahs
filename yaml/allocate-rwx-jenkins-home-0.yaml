@@ -1,14 +1,14 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: allocate-rwx-jenkins-home-${DOMAIN}-0
+  name: allocate-rwx-jenkins-home-${CONTROLLER_NAME}-0
 spec:
   template:
     spec:
       volumes:
         - name: volume
           persistentVolumeClaim:
-            claimName: pvc-rwx-jenkins-home-${DOMAIN}-0
+            claimName: pvc-rwx-jenkins-home-${CONTROLLER_NAME}-0
       containers:
         - name: busybox
           image: busybox

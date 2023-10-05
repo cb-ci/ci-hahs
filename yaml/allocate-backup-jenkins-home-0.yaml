@@ -1,14 +1,14 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: allocate-backup-jenkins-home-${DOMAIN}-0
+  name: allocate-backup-jenkins-home-${CONTROLLER_NAME}-0
 spec:
   template:
     spec:
       volumes:
       - name: volume
         persistentVolumeClaim:
-          claimName: backup-jenkins-home-${DOMAIN}-0
+          claimName: backup-jenkins-home-${CONTROLLER_NAME}-0
       containers:
       - name: busybox
         image: busybox
