@@ -23,10 +23,8 @@ Example
 > ./upgradeController.sh -c team-ebs-controller1  -e 0
 
 
-
-* Once the script is done, got to CJOC UI and delete the Controller.
- * * The original volume with JENKINS_HOME (EBS,RWO) will retain (see retain policy)
-* Then recreate the Controller in CJOC with the same name. Ensure that the storage class in CJOC Controller config screen is pointing to an efs storage class before you start the new Controller
-* CB CasC might help to avoid the manual steps 
-* Once the Controller is up again it should have the data from the previous EBS JENKINS_HOME volume
+# Final steps
+* delete the Controller in CJOC and recreate it with the same name- Ensure efs-sc is applied in provisioning config
+* for example you can use CasC: see  ./scripts/createController/README.md (./scripts/createController/README.md)
+* Then enable HA on the controller
 
