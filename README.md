@@ -25,6 +25,6 @@ Example
 
 # Final steps
 * delete the Controller in CJOC and recreate it with the same name- Ensure efs-sc is applied in provisioning config
-* for example you can use CasC: see  ./scripts/createController/README.md (./scripts/createController/README.md)
+* for example you can use CasC: see [./scripts/createController/README.md](./scripts/createController/README.md) 
 * Then enable HA on the controller
 
