@@ -1,19 +1,21 @@
 #! /bin/bash
 
-echo "Usage for time logging:$0 |while IFS= read -r line; do printf '%s %s\n' "$(date)" "$line"; done| tee logger.log"
+echo "Usage for time logging:$0 |while IFS= read -r line; do printf '%s %s\n' "\$(date)" "\$line"; done| tee logger.log"
 #CONTROLLERNAME
 CONTROLLER=ha #ADJUST ME
 #CB BASE URL
 CB_URL=https://ci.acaternberg.pscbdemos.com # ADJUST ME
 CONTROLLER_URL=$CB_URL/$CONTROLLER
+LIVENESS_PROBE_URI=/whoAmI/api/json?tree=authenticated
+CONNECT_TIMEOUT=5
 #kubectl get deployments
 checkOnline() {
   #kubectl rollout restart deployment $CONTROLLER
   RESPONSEHEADERS=headers-controller-online
-  while [ -n "$(curl -s -IL ${CONTROLLER_URL}/login)" ]
+  while [ -n "$(curl --connect-timeout $CONNECT_TIMEOUT  -s -IL ${CONTROLLER_URL}/$LIVENESS_PROBE_URI)" ]
   do
     echo "##################################################"
-    curl -s -IL -o ${RESPONSEHEADERS} ${CONTROLLER_URL}/login
+    curl --connect-timeout  $CONNECT_TIMEOUT  -s -IL -o ${RESPONSEHEADERS} ${CONTROLLER_URL}/$LIVENESS_PROBE_URI
     #cat $RESPONSEHEADERS
     if [ -n "$(cat $RESPONSEHEADERS |grep -E 'HTTP/2 201|HTTP/ 200')" ]
     then
@@ -26,7 +28,7 @@ checkOnline() {
     echo "REPLICA_IP:   $REPLICA_IP"
     #kubectl get pod -l com.cloudbees.cje.tenant=$CONTROLLER
     #kubectl rollout status deployment $CONTROLLER
-    sleep 3
+    sleep $CONNECT_TIMEOUT
   done
 }
 checkOnline
