@@ -12,7 +12,8 @@ checkOnline() {
   RESPONSEHEADERS=headers-controller-online
   while [ -n "$(curl -s -IL ${CONTROLLER_URL}/login)" ]
   do
-    curl  -IL -o ${RESPONSEHEADERS} ${CONTROLLER_URL}/login
+    echo "##################################################"
+    curl -s -IL -o ${RESPONSEHEADERS} ${CONTROLLER_URL}/login
     #cat $RESPONSEHEADERS
     if [ -n "$(cat $RESPONSEHEADERS |grep -E 'HTTP/2 201|HTTP/ 200')" ]
     then
