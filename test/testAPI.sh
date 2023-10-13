@@ -35,7 +35,6 @@ do
 	#see curl headers https://daniel.haxx.se/blog/2022/03/24/easier-header-picking-with-curl/
   RESPONSEHEADERS=headers
   #-b cookie-jar.txt
-	echo "curl -s -IL -o $RESPONSEHEADERS  -u $ADMINTOKEN -X POST  $CONTROLLER_URL/job/$JOB/build"
 	curl -s -IL -o $RESPONSEHEADERS  -u $ADMINTOKEN -X POST  "$CONTROLLER_URL/job/$JOB/build?delay=0sec&?token=$TOKEN"
   #cat $RESPONSEHEADERS
   if [ -z "$(cat $RESPONSEHEADERS |grep -oE 'HTTP/2 201|HTTP/ 200')" ]
