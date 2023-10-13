@@ -1,6 +1,8 @@
 #! /bin/bash
-TOKEN="YOUADMINTOKEN"
+echo "Usage for time logging:$0 |while IFS= read -r line; do printf '%s %s\n' "\$(date)" "\$line"; done| tee logger.log"
+TOKEN="YOURTOKEN"
 ADMINTOKEN="admin:$TOKEN"
+
 #CONTROLLERNAME
 CONTROLLER=ha #ADJUST ME
 #CB BASE URL
@@ -8,13 +10,11 @@ CB_URL=https://ci.acaternberg.pscbdemos.com # ADJUST ME
 CONTROLLER_URL=$CB_URL/$CONTROLLER
 #JOBNAME
 JOB=hellworld
+#curl connect_timeout
+CONNECT_TIMEOUT=5
 
 #first we need to create a test job
 # see https://docs.cloudbees.com/docs/cloudbees-ci-kb/latest/client-and-managed-controllers/how-to-create-a-job-using-the-rest-api-and-curl
-#CRUMB=$(curl -s -L -u $TOKEN $CONTROLLER_URL'/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)')
-#echo $CRUMB
-#For CRUMB issues add the Header to the following curl requests
-# -H "$CRUMB" -H "Content-Type:text/xml"
 echo "Controller_url: $CONTROLLER_URL"
 echo "Check if job exist"
 if [ -n "$(curl  -s -IL -u $ADMINTOKEN -X GET $CONTROLLER_URL/job/$JOB/config.xml | grep -o  'HTTP/2 404')" ]
@@ -35,7 +35,7 @@ do
 	#see curl headers https://daniel.haxx.se/blog/2022/03/24/easier-header-picking-with-curl/
   RESPONSEHEADERS=headers
   #-b cookie-jar.txt
-	curl -s -IL -o $RESPONSEHEADERS  -u $ADMINTOKEN -X POST  "$CONTROLLER_URL/job/$JOB/build?delay=0sec&?token=$TOKEN"
+	curl --connect-timeout  $CONNECT_TIMEOUT  -s -IL -o $RESPONSEHEADERS  -u $ADMINTOKEN -X POST  "$CONTROLLER_URL/job/$JOB/build?delay=0sec&?token=$TOKEN"
   #cat $RESPONSEHEADERS
   if [ -z "$(cat $RESPONSEHEADERS |grep -oE 'HTTP/2 201|HTTP/ 200')" ]
   then
@@ -49,7 +49,7 @@ do
 	    echo "REPLICA:   $REPLICA"
 	    #curl -u $TOKEN  -IL $LOCATION/api/json?pretty=true
 	fi
-	sleep 10
+	sleep $CONNECT_TIMEOUT
 done
 
 
