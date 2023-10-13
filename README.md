@@ -28,3 +28,18 @@ Example
 * for example you can use CasC: see [./scripts/createController/README.md](./scripts/createController/README.md) 
 * Then enable HA on the controller
 
+
+# Kubemetrics
+
+To see CPU and Memory consumption of each Controller replica you need to install [kube-metrics](https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html)
+
+```
+watch kubectl top pod
+```
+Result
+```
+NAME                        CPU(cores)   MEMORY(bytes)
+cjoc-0                      9m           1179Mi
+ha-6dd96f6558-ckrxb         7m           1429Mi
+ha-6dd96f6558-vrsvx         10m          1450Mi
+```
