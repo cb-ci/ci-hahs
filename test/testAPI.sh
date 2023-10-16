@@ -1,12 +1,24 @@
 #! /bin/bash
-echo "Usage for time logging:$0 |while IFS= read -r line; do printf '%s %s\n' "\$(date)" "\$line"; done| tee logger.log"
-TOKEN="YOURTOKEN"
-ADMINTOKEN="admin:$TOKEN"
 
+
+show_help () {
+  echo "Usage simple:$0 <CI_ADMIN_TOKEN> <CI_BASE_URL> <CI_CONTROLLER>"
+  echo "Usage for time logging:$0 <CI_ADMIN_TOKEN> <CI_BASE_URL> <CI_CONTROLLER> |while IFS= read -r line; do printf '%s %s\n' "\$\(date\)" "\$line"; done |tee logger.log"
+}
+
+if [[ ${#} -ne 3 ]]; then
+   show_help
+   exit 0
+fi
+
+#JENKINS ADMIN_TOKEN
+TOKEN=${1}
+#ADMIN_USER and ADMIN_TOKEN combined
+ADMINTOKEN="admin:$TOKEN"
+#CI BASE URL
+CB_URL=${2} # ADJUST ME
 #CONTROLLERNAME
-CONTROLLER=ha #ADJUST ME
-#CB BASE URL
-CB_URL=https://ci.acaternberg.pscbdemos.com # ADJUST ME
+CONTROLLER=${3:-ha}
 CONTROLLER_URL=$CB_URL/$CONTROLLER
 #JOBNAME
 JOB=hellworld
