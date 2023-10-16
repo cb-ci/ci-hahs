@@ -7,9 +7,12 @@ see https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-wa
 
 # Run API test
 
-> cp setenv.sh.rename setenv.sh
-> source ./setenv.sh
-> ./testAPI.sh $CI_ADMIN_TOKEN $CI_BASE_URL $CI_CONTROLLER
+```
+cp setenv.sh.rename setenv.sh
+source ./setenv.sh
+./testAPI.sh $CI_ADMIN_TOKEN $CI_BASE_URL $CI_CONTROLLER
+```
+
 
 
 # Stress Controller 
