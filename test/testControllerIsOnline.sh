@@ -30,6 +30,8 @@ checkOnline() {
     #kubectl rollout status deployment $CI_CONTROLLER
     sleep $CONNECT_TIMEOUT
   done
+  echo "${CI_CONTROLLER_URL} is offline and not responding"
+
 }
 checkOnline
 
