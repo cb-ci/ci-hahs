@@ -1,30 +1,17 @@
 #! /bin/bash
 
+source ./setenv.sh
 
-show_help () {
-  echo "Usage simple:$0 <CI_ADMIN_TOKEN> <CI_BASE_URL> <CI_CONTROLLER>"
-  echo "Usage for time logging:$0 <CI_ADMIN_TOKEN> <CI_BASE_URL> <CI_CONTROLLER> |while IFS= read -r line; do printf '%s %s\n' "\$\(date\)" "\$line"; done |tee logger.log"
-}
 
-if [[ ${#} -ne 3 ]]; then
-   show_help
-   exit 0
-fi
 
-#JENKINS ADMIN_TOKEN
-TOKEN=${1}
 #ADMIN_USER and ADMIN_TOKEN combined
-ADMINTOKEN="admin:$TOKEN"
-#CI BASE URL
-CB_URL=${2} # ADJUST ME
-#CONTROLLERNAME
-CONTROLLER=${3:-ha}
-CONTROLLER_URL=$CB_URL/$CONTROLLER
+ADMINTOKEN="$CI_ADMIN_USER:$CI_ADMIN_TOKEN"
+CONTROLLER_URL=$CI_BASE_URL/$CI_CONTROLLER
 #JOBNAME
 JOB=hellworld
 #curl connect_timeout
 CONNECT_TIMEOUT=5
-
+RESPONSEHEADERS=headers
 #first we need to create a test job
 # see https://docs.cloudbees.com/docs/cloudbees-ci-kb/latest/client-and-managed-controllers/how-to-create-a-job-using-the-rest-api-and-curl
 echo "Controller_url: $CONTROLLER_URL"
@@ -45,7 +32,7 @@ do
 	#curl -i -u $TOKEN -X POST  $CONTROLLER_URL/job/$JOB/build
 	#RESPONSE=$(curl  -si -w "\n%{size_header},%{size_download}" -u $TOKEN -X POST  $CONTROLLER_URL/job/$JOB/build)
 	#see curl headers https://daniel.haxx.se/blog/2022/03/24/easier-header-picking-with-curl/
-  RESPONSEHEADERS=headers
+
   #-b cookie-jar.txt
 	curl --connect-timeout  $CONNECT_TIMEOUT  -s -IL -o $RESPONSEHEADERS  -u $ADMINTOKEN -X POST  "$CONTROLLER_URL/job/$JOB/build?delay=0sec&?token=$TOKEN"
   #cat $RESPONSEHEADERS

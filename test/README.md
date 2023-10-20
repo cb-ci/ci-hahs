@@ -1,3 +1,28 @@
+# Prepare config
+
+```
+cp setenv.sh.rename setenv.sh
+```
+* Set your values in `setenv.sh`
+
+# Tests
+
+## testJobTrigger.sh 
+
+tests whether we can access the API and trigger a Job.
+* Each build is always running on the same replica
+* If agents are used, they will be reconnected to another replica 
+* If the current replicate gets interrupted the build resumes on the next replica
+
+# Run with Time logging
+
+To enable time logging we need to add the follwing to the end of the script calls 
+>  |while IFS= read -r line; do printf '%s %s\n' "$(date)" "$line"; done |tee logger.log"
+
+For example
+> ./testJobTrigger.sh |while IFS= read -r line; do printf '%s %s\n' "$(date)" "$line"; done |tee logger.log
+
+
 # Horiontal podscaling
 
 see https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/ 
