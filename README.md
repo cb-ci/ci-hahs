@@ -19,8 +19,10 @@
 
 ## Note:
 
-The availability zone `us-east-1a` is referenced in the scripts. 
-If you are on another one, please replace it. 
+* The EBS Controller which you want to migrate requires to be online
+* The availability zone `us-east-1a` is currently referenced in the scripts. 
+* If you are on another one, please replace it. 
+
 * TODO: replace AZ with a variable
 
 ## Option 1: Upgrade Controller from EBS to EFS using a EBS Snapshot volume
