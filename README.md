@@ -19,7 +19,7 @@
 
 ## Note:
 
-The availability zone `us-east-1a` is references in the scripts. 
+The availability zone `us-east-1a` is referenced in the scripts. 
 If you are on another one, please replace it. 
 * TODO: replace AZ with a variable
 
