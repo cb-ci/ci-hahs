@@ -13,7 +13,7 @@
 # Get started
 
 ## Required tools referenced in the scripts
-* 
+
 * aws-cli
 * jq
 * yq
