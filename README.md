@@ -7,9 +7,6 @@
 * Inside the `script` directory you ll find some helper scripts, see the README files and resources there
 * Inside the `test` directory you ll find some test Pipelines and test scripts for HA/HS. Some of them are in development state
 
-
-
-
 # Get started
 
 ## Required tools referenced in the scripts
