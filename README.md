@@ -1,14 +1,19 @@
 # ci-hahs
 
-This repo is about to upgrade a CB CI EBS Controller to EFS Controller
-* Background see https://docs.cloudbees.com/docs/cloudbees-ci/latest/ha-install-guide/install-ha-on-platforms#_migrate_an_existing_managed_controller_controller_to_high_availability_ha
+CloudBees HA/HS requires Controllers with EFS storage class
+See background about HA/HS  https://docs.cloudbees.com/docs/cloudbees-ci/latest/ha-install-guide/install-ha-on-platforms#_migrate_an_existing_managed_controller_controller_to_high_availability_ha
+
+* The  `./upgradeController.sh`script is about to upgrade a CB CI EBS Controller (StatefullSet) to EFS Controller (Deployment with Replicas)
+* Inside the `script` directory you ll find some helper scripts, see the README files there
+
 
 # Get started
 
 ## Option1: Upgrade Controller from EBS to EFS using a EBS Snapshot volume
-Using EBS Snapshots for the synchronization from EBS to EBS reduces the downtime of a Controller.
-It is useful for huge JENKINS_HOME volume sizes when Controller availability and less downtime is important.
-Use the `-e 1` parameter to trigger a sync from EBS snapshot
+
+* Using EBS Snapshots for the synchronization from EBS to EBS reduces the downtime of a Controller.
+* It is useful for huge JENKINS_HOME volume sizes when Controller availability and less downtime is important.
+* Use the `-e 1` parameter to trigger a sync from EBS snapshot
 
 > ./upgradeController.sh -c YOUR_CONTROLLER_NAME  -e 1
 
@@ -16,11 +21,11 @@ Example
 > ./upgradeController.sh -c team-ebs-controller1  -e 1
 
 ## Option2: Upgrade Controller from EBS to EFS directly from a Controller PV volume (No EBS Snapshot)
-This will create an EFS PV and syncs the JENKINS_HOME data directly from the Controller PV volume
-Before the synchronization starts,the related  Kubernetes Statefulset of the Controller will be scaled to zero. 
-This causes a downtime of the Controller depending on the JENKINS_HOME size. 
 
-Use the `-e 0` parameter to skip a sync from EBS snapshot
+* This will create an EFS PV and syncs the JENKINS_HOME data directly from the Controller PV volume
+* Before the synchronization starts,the related  Kubernetes Statefulset of the Controller will be scaled to zero. 
+* This causes a downtime of the Controller depending on the JENKINS_HOME size. 
+* Use the `-e 0` parameter to skip a sync from EBS snapshot
 
 > ./upgradeController.sh -c YOUR_CONTROLLER_NAME  -e 0
 
