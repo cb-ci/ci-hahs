@@ -1,14 +1,14 @@
 * CloudBees HA/HS requires Controllers with EFS storage class.
 * See background about HA/HS  
 * The  `./upgradeController.sh`script [automates the EBS/EFS steps describe here](https://docs.cloudbees.com/docs/cloudbees-ci/latest/ha-install-guide/install-ha-on-platforms#_migrate_an_existing_managed_controller_controller_to_high_availability_ha)
-* It is about to upgrade a CB CI EBS Controller (StatefullSet) to EFS Controller (Deployment with Replicas)
+* The `./upgradeController.sh` script about to upgrade a CB CI EBS Controller (StatefullSet) to EFS Controller (Deployment with Replicas)
+* Inside the `yaml` directory you ll find some Kubernetes resource templates which are referenced during the migration by the upgrade script
 * Inside the `script` directory you ll find some helper scripts, see the README files and resources there
 * Inside the `test` directory you ll find some test Pipelines and test scripts for HA/HS. Some of them are in development state
 
-
 # Get started
 
-## Option1: Upgrade Controller from EBS to EFS using a EBS Snapshot volume
+## Option 1: Upgrade Controller from EBS to EFS using a EBS Snapshot volume
 
 * Using EBS Snapshots for the synchronization from EBS to EBS reduces the downtime of a Controller.
 * It is useful for huge JENKINS_HOME volume sizes when Controller availability and less downtime is important.
@@ -19,7 +19,7 @@
 Example
 > ./upgradeController.sh -c team-ebs-controller1  -e 1
 
-## Option2: Upgrade Controller from EBS to EFS directly from a Controller PV volume (No EBS Snapshot)
+## Option 2: Upgrade Controller from EBS to EFS directly from a Controller PV volume (No EBS Snapshot)
 
 * This will create an EFS PV and syncs the JENKINS_HOME data directly from the Controller PV volume
 * Before the synchronization starts,the related  Kubernetes Statefulset of the Controller will be scaled to zero. 
