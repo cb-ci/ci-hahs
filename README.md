@@ -48,11 +48,11 @@ Example
 
 
 # Final steps
-* delete the Controller in CJOC and recreate it with the same name - Ensure efs-sc is applied in provisioning config
-* for example you can use CasC: see [./scripts/createController/README.md](./scripts/createController/README.md) 
-* Then enable HA on the controller
-* To automate the final steps you can use CasC: see  [./scripts/createController/createManagedController.sh](./scripts/createController/createManagedController.sh)
-* Example:  `cd scripts/createController/ && ./createManagedController.sh ${CONTROLLER_NAME} efs-sc"`
+* delete the Controller in Operations center and recreate it with the same name - Ensure efs-sc is applied in provisioning config
+* You can do this manually through the Operations center UI or you can use CasC: see [./scripts/createController/README.md](./scripts/createController/README.md) 
+* then enable HA on the controller
+* to automate the final steps you can use CasC: see  [./scripts/createController/createManagedController.sh](./scripts/createController/createManagedController.sh)
+* example:  `cd scripts/createController/ && ./createManagedController.sh ${CONTROLLER_NAME} efs-sc"`
 
 
 
