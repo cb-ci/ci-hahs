@@ -7,7 +7,7 @@ export GENDIR=generated
 mkdir -p $GENDIR
 export AWS_DEFAULT_REGION=us-east-1
 
-TAGS="ResourceType=snapshot,Tags=[{Key=cb:environment,Value=cihahs-test},{Key=cb:user,Value=acaternberg},{Key=cb:owner,Value=ps}]"
+TAGS="ResourceType=snapshot,Tags=[{Key=cb-environment,Value=cihahs-test},{Key=cb-user,Value=YOURUSER},{Key=cb-owner,Value=YOURDEPARTMENT}]"
 
 #The JENKINS_HOME PV name where we want to take a snapshot from
 VOLUMENAME=$(kubectl get "pvc/jenkins-home-${DOMAIN}-0" -o go-template={{.spec.volumeName}})
