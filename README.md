@@ -1,5 +1,6 @@
+# Objective/About 
+
 * CloudBees HA/HS requires Controllers with EFS storage class.
-* See background about HA/HS  
 * The  `./upgradeController.sh`script [automates the EBS/EFS steps describe here](https://docs.cloudbees.com/docs/cloudbees-ci/latest/ha-install-guide/install-ha-on-platforms#_migrate_an_existing_managed_controller_controller_to_high_availability_ha)
 * The `./upgradeController.sh` script about to upgrade a CB CI EBS Controller (StatefullSet) to EFS Controller (Deployment with Replicas)
 * Inside the `yaml` directory you ll find some Kubernetes resource templates which are referenced during the migration by the upgrade script
