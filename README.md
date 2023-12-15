@@ -5,28 +5,36 @@ This repo is about to upgrade a CB CI EBS Controller to EFS Controller
 
 # Get started
 
-## Upgrade Controller from EBS to EFS including EBS Snapshot volume
-this will reduce the downtime of a Controller, useful for huge JENKINS_HOME volume sizes when Controller availability is important
+## Option1: Upgrade Controller from EBS to EFS using a EBS Snapshot volume
+Using EBS Snapshots for the synchronization from EBS to EBS reduces the downtime of a Controller.
+It is useful for huge JENKINS_HOME volume sizes when Controller availability and less downtime is important.
+Use the `-e 1` parameter to trigger a sync from EBS snapshot
+
 > ./upgradeController.sh -c YOUR_CONTROLLER_NAME  -e 1
 
 Example
 > ./upgradeController.sh -c team-ebs-controller1  -e 1
 
-## Upgrade Controller from EBS to EFS directly from Controller PV volume (No EBS Snapshot)
-This will create a EFS PV and sync JENKINS_HOME data direcly from the Controller PV volume
-Before the sync the statefulset of the Controller will be scaled to zero. 
-This might increase the downtime ofthe Controller
+## Option2: Upgrade Controller from EBS to EFS directly from a Controller PV volume (No EBS Snapshot)
+This will create an EFS PV and syncs the JENKINS_HOME data directly from the Controller PV volume
+Before the synchronization starts,the related  Kubernetes Statefulset of the Controller will be scaled to zero. 
+This causes a downtime of the Controller depending on the JENKINS_HOME size. 
 
-> > ./upgradeController.sh -c YOUR_CONTROLLER_NAME  -e 0
+Use the `-e 0` parameter to skip a sync from EBS snapshot
+
+> ./upgradeController.sh -c YOUR_CONTROLLER_NAME  -e 0
 
 Example
 > ./upgradeController.sh -c team-ebs-controller1  -e 0
 
 
 # Final steps
-* delete the Controller in CJOC and recreate it with the same name- Ensure efs-sc is applied in provisioning config
+* delete the Controller in CJOC and recreate it with the same name - Ensure efs-sc is applied in provisioning config
 * for example you can use CasC: see [./scripts/createController/README.md](./scripts/createController/README.md) 
 * Then enable HA on the controller
+* To automate the final steps you can use CasC: see  [./scripts/createController/createManagedController.sh](./scripts/createController/createManagedController.sh)
+* Example:  `cd scripts/createController/ && ./createManagedController.sh ${CONTROLLER_NAME} efs-sc"`
+
 
 
 # Kubemetrics
