@@ -7,7 +7,24 @@
 * Inside the `script` directory you ll find some helper scripts, see the README files and resources there
 * Inside the `test` directory you ll find some test Pipelines and test scripts for HA/HS. Some of them are in development state
 
+
+
+
 # Get started
+
+## Required tools referenced in the scripts
+* 
+* aws-cli
+* jq
+* yq
+* kubectl
+* curl
+
+## Note:
+
+The availability zone `us-east-1a` is references in the scripts. 
+If you are on another one, please replace it. 
+TODO: replace AT with an variable
 
 ## Option 1: Upgrade Controller from EBS to EFS using a EBS Snapshot volume
 
