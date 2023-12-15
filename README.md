@@ -21,7 +21,7 @@
 
 The availability zone `us-east-1a` is references in the scripts. 
 If you are on another one, please replace it. 
-TODO: replace AT with a variable
+* TODO: replace AZ with a variable
 
 ## Option 1: Upgrade Controller from EBS to EFS using a EBS Snapshot volume
 
