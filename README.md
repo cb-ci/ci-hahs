@@ -21,7 +21,7 @@
 
 * The EBS Controller which you want to migrate requires to be online
 * The availability zone `us-east-1a` is currently referenced in the scripts. 
-* If you are on another one, please replace it. 
+* If you are on another zone, please replace it in the scripts. 
 
 * TODO: replace AZ with a variable
 
