@@ -13,10 +13,14 @@ pipeline {
     }
 
     stages {
-        stage('Hello') {
+        stage('Stage1') {
             steps {
-                echo 'Hello World'
-                sh "hostname"
+                sh '''
+                    set +x
+                    	printf '%s %s\n' "$(date) Running on Agent-Pod: $(hostname)"
+                    	#sleep for 60 sec, kill the active replica now and check if SSH agent gets reconnected to the other replica
+                    	sleep 60
+                '''
             }
         }
     }
